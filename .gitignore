@@ -1,0 +1,60 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Docker and local data
+docker/mysql/
+docker/mongodb/
+docker/data/
+
+# Frontend dependencies and builds
+ecoride-front-end/node_modules/
+ecoride-front-end/dist/
+ecoride-front-end/build/
+ecoride-front-end/.vite/
+ecoride-front-end/.next/
+ecoride-front-end/coverage/
+
+# Backend dependencies and runtime files
+ecoride-back-end/vendor/
+ecoride-back-end/var/
+ecoride-back-end/.env.local
+ecoride-back-end/.env.*.local
+ecoride-back-end/public/bundles/
+ecoride-back-end/phpunit.xml
+
+# Symfony cache and generated files
+ecoride-back-end/migrations/.doctrine-project
+
+# Composer
+ecoride-back-end/composer.phar
+
+# Tests and coverage
+coverage/
+.phpunit.result.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
