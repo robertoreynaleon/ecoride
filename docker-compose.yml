@@ -19,7 +19,8 @@ services:
       - ./ecoride-back-end:/var/www/ecoride
     environment:
       DATABASE_URL: mysql://ecoride:ecoride_password@mysql:3306/ecoride?serverVersion=8.4.0&charset=utf8mb4
-      MONGODB_URL: mongodb://mongodb:27017
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DB: ecoride
     depends_on:
       - mysql
       - mongodb
