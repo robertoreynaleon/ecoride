@@ -14,6 +14,7 @@ services:
   backend:
     build:
       context: ./docker/php
+    user: "1000:1000"
     working_dir: /var/www/ecoride
     volumes:
       - ./ecoride-back-end:/var/www/ecoride

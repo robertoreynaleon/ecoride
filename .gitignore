@@ -60,5 +60,5 @@ temp/
 *.swp
 *.swo
 
-# Project documents
-/documents/
+# Dossier mockups
+/mockups/

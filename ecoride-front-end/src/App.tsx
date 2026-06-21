@@ -1,121 +1,105 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <header className="site-header">
+        <a className="site-header__logo" href="/account" aria-label="Accéder à mon compte Ecoride">
+          ECORIDE
+        </a>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="home">
+        <section className="home-hero" aria-labelledby="home-title">
+          <div className="home-hero__content">
+            <h1 id="home-title">Partagez la route, réduisez l’empreinte.</h1>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
+            <nav className="home-hero__actions" aria-label="Actions principales">
+              <a href="#ride-search">Chercher un trajet</a>
+              <a href="/rides/new">Proposer un trajet</a>
+            </nav>
+          </div>
+
+          <figure className="home-hero__media">
+            <img
+              src="/images/home-carpool.jpg"
+              alt="Des voyageurs partageant un trajet en covoiturage"
+            />
+          </figure>
+        </section>
+
+        <section className="ride-search" id="ride-search" aria-label="Rechercher un trajet">
+          <form className="ride-search__form" action="/rides" method="get">
+            <div className="ride-search__field">
+              <label htmlFor="departure">Départ</label>
+              <input id="departure" name="departure" type="text" autoComplete="address-level2" required />
+            </div>
+
+            <div className="ride-search__field">
+              <label htmlFor="destination">Destination</label>
+              <input id="destination" name="destination" type="text" autoComplete="address-level2" required />
+            </div>
+
+            <div className="ride-search__field">
+              <label htmlFor="departure-date">Date</label>
+              <input id="departure-date" name="departureDate" type="date" required />
+            </div>
+
+            <div className="ride-search__field">
+              <label htmlFor="return-date">Retour</label>
+              <input id="return-date" name="returnDate" type="date" />
+            </div>
+
+            <div className="ride-search__field">
+              <label htmlFor="passengers">Passagers</label>
+              <input id="passengers" name="passengers" type="number" min="1" max="8" defaultValue="1" required />
+            </div>
+
+            <button className="ride-search__submit" type="submit">
+              Rechercher
+            </button>
+          </form>
+        </section>
+
+        <section className="home-benefits" aria-label="Les avantages du covoiturage Ecoride">
+          <ul className="home-benefits__list">
+            <li aria-label="Trouver un point de départ">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#location-icon" />
+              </svg>
             </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
+            <li aria-label="Organiser son trajet">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#route-icon" />
+              </svg>
+            </li>
+            <li aria-label="Voyager ensemble">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#passengers-icon" />
+              </svg>
+            </li>
+            <li aria-label="Échanger avec les membres">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#messages-icon" />
+              </svg>
+            </li>
+            <li aria-label="Conduire ou réserver">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#car-icon" />
+              </svg>
+            </li>
+            <li aria-label="Partager une évaluation">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#reviews-icon" />
+              </svg>
+            </li>
+            <li aria-label="Réduire son empreinte environnementale">
+              <svg aria-hidden="true" focusable="false">
+                <use href="/icons.svg#eco-icon" />
+              </svg>
             </li>
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        </section>
+      </main>
+    </div>
   )
 }
 
