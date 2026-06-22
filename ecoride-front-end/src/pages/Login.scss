@@ -1,0 +1,215 @@
+@use '../styles/variables' as *;
+
+.login {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp($space-6, 6svh, $space-9) $content-padding-desktop;
+  overflow-y: auto;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background: $color-background;
+
+  &__content {
+    width: min(100%, 30rem);
+  }
+
+  &__panel {
+    overflow: hidden;
+    border: $border-accent;
+    border-radius: 2.5rem;
+    background: $color-surface;
+    box-shadow: 0 0 0 $space-1 $color-surface, $shadow-control;
+  }
+
+  h1 {
+    margin: 0;
+    padding: $space-5 $space-6 $space-4;
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+    letter-spacing: $letter-spacing-default;
+    color: $color-text;
+    text-align: center;
+  }
+
+  &__form {
+    display: grid;
+  }
+
+  &__field {
+    display: grid;
+    margin-inline: $space-6;
+    padding: $space-3 0 $space-4;
+    border-bottom: $border-default;
+    gap: $space-2;
+    transition: border-color $transition-fast;
+
+    label {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      line-height: $line-height-control;
+      color: $color-text;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      min-height: 2rem;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      color: $color-text;
+      background: transparent;
+
+      &:-webkit-autofill {
+        box-shadow: 0 0 0 1000px $color-surface inset;
+        -webkit-text-fill-color: $color-text;
+      }
+    }
+
+    &:focus-within {
+      border-color: $color-focus;
+      box-shadow: inset 0 -0.125rem 0 $color-focus;
+    }
+  }
+
+  &__submit {
+    width: auto;
+    min-height: 4rem;
+    margin: $space-4 $space-2 $space-2;
+    padding: $space-3 $space-5;
+    border: 0;
+    border-radius: $radius-md $radius-md 2rem 2rem;
+    font-size: $font-size-md;
+    font-weight: $font-weight-button;
+    line-height: $line-height-control;
+    letter-spacing: $letter-spacing-default;
+    color: $color-surface;
+    background: $color-primary;
+    cursor: pointer;
+    transition: filter $transition-fast, box-shadow $transition-fast;
+
+    &:hover {
+      filter: brightness(0.92);
+    }
+
+    &:focus-visible {
+      outline: 0;
+      box-shadow: inset $focus-ring;
+    }
+  }
+
+  &__register-link {
+    margin: $space-5 0 0;
+    font-size: $font-size-sm;
+    line-height: $line-height-body;
+    color: $color-text;
+    text-align: center;
+
+    a {
+      border-radius: $radius-sm;
+      font-weight: $font-weight-bold;
+      color: $color-surface;
+      text-underline-offset: $space-1;
+
+      &:hover {
+        text-decoration-thickness: 0.125rem;
+      }
+
+      &:focus-visible {
+        outline: 0;
+        box-shadow: $focus-ring;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-desktop) {
+  .login {
+    min-height: 0;
+    padding: $space-8 clamp($space-5, 5vw, $space-7) $space-6;
+    overflow: visible;
+    flex: 1 0 auto;
+
+    &__content {
+      width: min(100%, 28rem);
+    }
+
+    &__panel {
+      border-radius: 2.25rem;
+    }
+
+    h1 {
+      padding: $space-5 $space-5 $space-3;
+      font-size: $font-size-2xl;
+    }
+
+    &__submit {
+      border-radius: $radius-md $radius-md 1.75rem 1.75rem;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .login {
+    min-height: 0;
+    padding: $space-7 clamp(0.875rem, 5.5vw, 1.5rem) $space-5;
+    align-items: flex-start;
+
+    &__content {
+      width: min(100%, 24rem);
+    }
+
+    &__panel {
+      border-radius: 2rem;
+    }
+
+    h1 {
+      padding: $space-5 $space-5 $space-3;
+    }
+
+    &__field {
+      margin-inline: $space-5;
+      padding-block: $space-3;
+    }
+
+    &__submit {
+      min-height: 3.5rem;
+      margin-top: $space-4;
+      border-radius: $radius-md $radius-md 1.5rem 1.5rem;
+      font-size: $font-size-base;
+    }
+
+    &__register-link {
+      margin-top: $space-4;
+      font-size: $font-size-xs;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .login {
+    min-height: calc(740px - $header-height-mobile - 2rem);
+    padding-block: $space-7 $space-4;
+    flex: 1 0 auto;
+
+    &__panel {
+      border-radius: 1.75rem;
+    }
+
+    h1 {
+      padding-inline: $space-4;
+      font-size: $font-size-xl;
+    }
+
+    &__field {
+      margin-inline: $space-4;
+    }
+
+    &__submit {
+      border-radius: $radius-md $radius-md 1.25rem 1.25rem;
+    }
+  }
+}

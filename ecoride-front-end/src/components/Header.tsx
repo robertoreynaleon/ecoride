@@ -1,11 +1,12 @@
+import { Link } from 'react-router-dom'
 import './Header.scss'
 
 function Header() {
   return (
     <header className="site-header">
-      <a className="site-header__logo" href="/account" aria-label="Accéder à mon compte Ecoride">
+      <Link className="site-header__logo" to="/" aria-label="Retourner à l’accueil Ecoride">
         ECORIDE
-      </a>
+      </Link>
     </header>
   )
 }

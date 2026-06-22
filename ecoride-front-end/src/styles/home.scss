@@ -147,7 +147,7 @@
     min-height: 0;
     padding: $space-5 clamp($space-5, 4vw, $space-7) $space-6;
     overflow: visible;
-    flex: 0 0 auto;
+    flex: 1 0 auto;
     gap: $space-5;
     justify-content: flex-start;
   }

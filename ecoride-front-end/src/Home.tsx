@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import SearchBar from './components/SearchBar'
@@ -14,7 +15,7 @@ function Home() {
             <h1 id="home-title">Partagez la route, réduisez l’empreinte.</h1>
 
             <nav className="home-hero__actions" aria-label="Actions principales">
-              <a href="#ride-search">Se connecter</a>
+              <Link to="/login">Se connecter</Link>
               <a href="/rides/new">Proposer un trajet</a>
             </nav>
           </div>

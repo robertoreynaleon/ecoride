@@ -91,6 +91,21 @@ a {
 }
 
 @media (max-width: $breakpoint-desktop) {
+  html,
+  body,
+  #root,
+  .app {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  html,
+  #root,
+  .app {
+    overflow-x: clip;
+  }
+
   body,
   #root {
     height: auto;
@@ -105,6 +120,6 @@ a {
   .app {
     height: auto;
     min-height: 100svh;
-    overflow: visible;
+    overflow-y: visible;
   }
 }
