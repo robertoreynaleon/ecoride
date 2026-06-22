@@ -1,0 +1,27 @@
+@use '../styles/variables' as *;
+
+.site-footer {
+  display: flex;
+  min-height: $footer-height;
+  flex: 0 0 $footer-height;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-inverse;
+  background: $color-background;
+
+  small {
+    font-size: $font-size-2xs;
+    font-weight: $font-weight-regular;
+    line-height: 1;
+  }
+}
+
+@media (max-width: $breakpoint-desktop) {
+  .site-footer {
+    display: flex;
+    min-height: 2rem;
+    padding: $space-2 $space-4;
+    flex: 0 0 auto;
+    text-align: center;
+  }
+}

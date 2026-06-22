@@ -28,6 +28,7 @@ $font-weight-bold: 700;
 $font-weight-extrabold: 800;
 
 // Type scale
+$font-size-2xs: 0.625rem; // 10px
 $font-size-xs: 0.75rem; // 12px
 $font-size-sm: 0.875rem; // 14px
 $font-size-base: 1rem; // 16px
@@ -94,7 +95,9 @@ $container-max-width: 81.5rem; // 1304px
 $content-padding-desktop: 4.25rem; // 68px
 $content-padding-mobile: 1.75rem; // 28px
 $header-height-desktop: 6.25rem; // 100px
-$header-height-mobile: 3.25rem; // 52px
+$header-height-tablet: 3.25rem; // 52px
+$header-height-mobile: 2.75rem; // 44px
+$footer-height: 1.25rem; // 20px
 $search-control-min-height: 5.5rem; // 88px
 
 // Breakpoints

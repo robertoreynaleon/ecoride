@@ -1,0 +1,59 @@
+@use '../styles/variables' as *;
+
+.site-header {
+  display: flex;
+  min-height: $header-height-desktop;
+  flex: 0 0 $header-height-desktop;
+  align-items: center;
+  justify-content: center;
+  background: $color-surface;
+
+  &__logo {
+    border-radius: $radius-sm;
+    font-family: $font-family-brand;
+    font-size: $font-size-brand-desktop;
+    font-weight: $font-weight-brand;
+    line-height: 1;
+    letter-spacing: $letter-spacing-default;
+    color: $color-brand;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 0;
+      box-shadow: $focus-ring;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-desktop) {
+  .site-header {
+    min-height: $header-height-tablet;
+    flex: 0 0 $header-height-tablet;
+
+    &__logo {
+      font-size: $font-size-xl;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .site-header {
+    min-height: $header-height-mobile;
+    flex: 0 0 $header-height-mobile;
+
+    &__logo {
+      font-size: $font-size-lg;
+    }
+  }
+}
+
+@media (max-height: 50rem) and (min-width: 64.0625rem) {
+  .site-header {
+    min-height: 5rem;
+    flex-basis: 5rem;
+
+    &__logo {
+      font-size: $font-size-3xl;
+    }
+  }
+}

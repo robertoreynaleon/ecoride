@@ -1,0 +1,110 @@
+@use 'variables' as *;
+
+@font-face {
+  font-family: 'Lexend Deca';
+  src: url('../assets/fonts/LexendDeca-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: $font-weight-regular;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lexend Deca';
+  src: url('../assets/fonts/LexendDeca-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: $font-weight-bold;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syncopate';
+  src: url('../assets/fonts/Syncopate-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: $font-weight-bold;
+  font-display: swap;
+}
+
+:root {
+  font-family: $font-family-body;
+  font-size: $font-size-base;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-body;
+  letter-spacing: $letter-spacing-default;
+  color: $color-text;
+  background: $color-background;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 20rem;
+  background: $color-background;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 20rem;
+  height: 100svh;
+  margin: 0;
+  overflow: hidden;
+  background: $color-background;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  height: 100svh;
+  margin: 0;
+  border: 0;
+  text-align: left;
+}
+
+.app {
+  display: flex;
+  height: 100svh;
+  overflow: hidden;
+  flex-direction: column;
+  background: $color-background;
+}
+
+@media (max-width: $breakpoint-desktop) {
+  body,
+  #root {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .app {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+}
