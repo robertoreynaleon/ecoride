@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import './Login.scss'
@@ -44,7 +45,7 @@ function Login() {
           </div>
 
           <p className="login__register-link">
-            Pas encore de compte ? <a href="/register">Créer un compte</a>
+            Pas encore de compte ? <Link to="/register">Créer un compte</Link>
           </p>
         </section>
       </main>
