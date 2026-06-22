@@ -14,7 +14,7 @@ function Home() {
             <h1 id="home-title">Partagez la route, réduisez l’empreinte.</h1>
 
             <nav className="home-hero__actions" aria-label="Actions principales">
-              <a href="#ride-search">Chercher un trajet</a>
+              <a href="#ride-search">Se connecter</a>
               <a href="/rides/new">Proposer un trajet</a>
             </nav>
           </div>
