@@ -25,6 +25,10 @@ const WIZARD_STEPS = [
 const FIRST_STEP = 1
 const LAST_STEP = WIZARD_STEPS.length
 const ROUTE_CHOICES: RouteChoice[] = ['with_tolls', 'no_tolls']
+const ROUTE_CHOICE_LABELS: Record<RouteChoice, string> = {
+  with_tolls: 'Avec péages',
+  no_tolls: 'Sans péages',
+}
 
 function formatDistance(distanceMeters?: number): string {
   if (!distanceMeters) {
@@ -826,25 +830,74 @@ function CreateRideWizard() {
               <h2 id="step-summary-title">7. Récapitulatif</h2>
               <p>Vérifiez les informations avant de publier votre trajet.</p>
 
-              <section aria-labelledby="summary-route-title">
+              <section className="ride-wizard__summary-section" aria-labelledby="summary-route-title">
                 <h3 id="summary-route-title">Itinéraire</h3>
-                <p>Départ : {rideData.departure.address || '-'}</p>
-                <p>Destination : {rideData.arrival.address || '-'}</p>
-                <p>Correspondances : {rideData.waypoints.length}</p>
+                <dl className="ride-wizard__summary-list">
+                  <div>
+                    <dt>Départ</dt>
+                    <dd>{rideData.departure.address || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Destination</dt>
+                    <dd>{rideData.arrival.address || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Type de trajet</dt>
+                    <dd>{ROUTE_CHOICE_LABELS[rideData.routeChoice]}</dd>
+                  </div>
+                  <div>
+                    <dt>Distance</dt>
+                    <dd>{formatDistance(rideData.estimatedDistanceMeters ?? undefined)}</dd>
+                  </div>
+                  <div>
+                    <dt>Durée</dt>
+                    <dd>{formatDuration(rideData.estimatedDurationSeconds ?? undefined)}</dd>
+                  </div>
+                </dl>
               </section>
 
-              <section aria-labelledby="summary-details-title">
+              <section
+                className="ride-wizard__summary-section"
+                aria-labelledby="summary-waypoints-title"
+              >
+                <h3 id="summary-waypoints-title">Arrêts</h3>
+                {rideData.waypoints.length === 0 ? (
+                  <p>Aucun arrêt ajouté.</p>
+                ) : (
+                  <ol className="ride-wizard__summary-waypoints">
+                    {rideData.waypoints.map((waypoint) => (
+                      <li key={waypoint.id}>
+                        Arrêt {waypoint.order} : {waypoint.address}
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </section>
+
+              <section className="ride-wizard__summary-section" aria-labelledby="summary-details-title">
                 <h3 id="summary-details-title">Détails</h3>
-                <p>Date : {rideData.departureDate || '-'}</p>
-                <p>Heure : {rideData.departureTime || '-'}</p>
-                <p>Places : {rideData.seatsAvailable || '-'}</p>
-                <p>Prix : {rideData.price || '-'}</p>
-              </section>
-
-              <section aria-labelledby="summary-estimation-title">
-                <h3 id="summary-estimation-title">Estimation</h3>
-                <p>Distance totale : {rideData.estimatedDistanceMeters ?? '-'}</p>
-                <p>Durée estimée : {rideData.estimatedDurationSeconds ?? '-'}</p>
+                <dl className="ride-wizard__summary-list">
+                  <div>
+                    <dt>Date</dt>
+                    <dd>{rideData.departureDate || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Heure</dt>
+                    <dd>{rideData.departureTime || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Places</dt>
+                    <dd>{rideData.seatsAvailable || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Prix par passager</dt>
+                    <dd>{rideData.price ? `${rideData.price} €` : '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Description</dt>
+                    <dd>{rideData.description || '-'}</dd>
+                  </div>
+                </dl>
               </section>
 
               <div className="ride-wizard__map" aria-label="Carte récapitulative du trajet">

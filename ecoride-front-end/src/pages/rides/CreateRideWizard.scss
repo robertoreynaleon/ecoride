@@ -282,6 +282,44 @@
     }
   }
 
+  &__summary-section {
+    display: grid;
+    padding: $space-3;
+    border: $border-default;
+    border-radius: $radius-md;
+    gap: $space-3;
+    background: rgb(255 255 255 / 30%);
+  }
+
+  &__summary-list {
+    display: grid;
+    margin: 0;
+    gap: $space-3;
+
+    div {
+      display: grid;
+      gap: $space-1;
+    }
+
+    dt {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-border;
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__summary-waypoints {
+    display: grid;
+    margin: 0;
+    padding-left: $space-5;
+    gap: $space-2;
+  }
+
   &__remove-waypoint {
     flex: 0 0 auto;
   }
