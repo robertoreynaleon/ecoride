@@ -22,6 +22,7 @@ export type GeoapifyRoutingResponse = {
 export type RouteCalculationOptions = {
   start: Coordinates
   end: Coordinates
+  waypoints?: Coordinates[]
   routeChoice: RouteChoice
   signal?: AbortSignal
 }
@@ -49,11 +50,14 @@ function formatGeoapifyWaypoint({ lat, lon }: Coordinates): string {
 export async function calculateRoute({
   start,
   end,
+  waypoints = [],
   routeChoice,
   signal,
 }: RouteCalculationOptions): Promise<RouteCalculationResult> {
+  const routeWaypoints = [start, ...waypoints, end].map(formatGeoapifyWaypoint).join('|')
+
   const params = new URLSearchParams({
-    waypoints: `${formatGeoapifyWaypoint(start)}|${formatGeoapifyWaypoint(end)}`,
+    waypoints: routeWaypoints,
     mode: 'drive',
     apiKey: getGeoapifyApiKey(),
   })

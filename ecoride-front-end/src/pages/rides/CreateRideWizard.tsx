@@ -171,6 +171,9 @@ function CreateRideWizard() {
 
     const routeStart = start
     const routeEnd = end
+    const routeWaypoints = rideData.waypoints
+      .toSorted((firstWaypoint, secondWaypoint) => firstWaypoint.order - secondWaypoint.order)
+      .map((waypoint) => waypoint.coordinates)
     const abortController = new AbortController()
 
     async function loadRouteOptions() {
@@ -183,6 +186,7 @@ function CreateRideWizard() {
             const route = await calculateRoute({
               start: routeStart,
               end: routeEnd,
+              waypoints: routeWaypoints,
               routeChoice,
               signal: abortController.signal,
             })
@@ -227,7 +231,12 @@ function CreateRideWizard() {
     return () => {
       abortController.abort()
     }
-  }, [currentStep, rideData.departure.coordinates, rideData.arrival.coordinates])
+  }, [
+    currentStep,
+    rideData.departure.coordinates,
+    rideData.arrival.coordinates,
+    rideData.waypoints,
+  ])
 
   useEffect(() => {
     const search = waypointSearch.trim()
@@ -387,11 +396,14 @@ function CreateRideWizard() {
           order: currentData.waypoints.length + 1,
         },
       ],
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
 
     setWaypointSearch('')
     setWaypointSuggestions([])
     setWaypointSearchError('')
+    setRouteResults({})
   }
 
   const removeWaypoint = (waypointId: string) => {
@@ -403,7 +415,10 @@ function CreateRideWizard() {
           ...waypoint,
           order: index + 1,
         })),
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
+    setRouteResults({})
   }
 
   const updateRideField = (
