@@ -873,6 +873,7 @@ function CreateRideWizard() {
                 routeGeometry={selectedRouteResult?.geometry}
                 routeVariant={rideData.routeChoice}
                 allowWaypointEditing
+                preserveViewOnMarkerChange
                 onWaypointAdd={addWaypointFromMap}
                 onWaypointMove={moveWaypointOnMap}
               />

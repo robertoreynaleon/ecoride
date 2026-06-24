@@ -37,6 +37,7 @@ type RideMapProps = {
   routeGeometry?: GeoapifyRouteGeometry | null
   routeVariant?: 'with_tolls' | 'no_tolls'
   allowWaypointEditing?: boolean
+  preserveViewOnMarkerChange?: boolean
   onWaypointAdd?: (coordinates: Coordinates) => void
   onWaypointMove?: (waypointId: string, coordinates: Coordinates) => void
 }
@@ -117,6 +118,7 @@ function RideMap({
   routeGeometry = null,
   routeVariant = 'with_tolls',
   allowWaypointEditing = false,
+  preserveViewOnMarkerChange = false,
   onWaypointAdd,
   onWaypointMove,
 }: RideMapProps) {
@@ -195,7 +197,9 @@ function RideMap({
     markerLayerRef.current = markerLayer
     map.addLayer(markerLayer)
 
-    if (markerFeatures.length > 1) {
+    if (preserveViewOnMarkerChange) {
+      // En mode édition, on conserve la vue choisie par l'utilisateur.
+    } else if (markerFeatures.length > 1) {
       const extent = markerSource.getExtent()
 
       if (extent) {
@@ -243,7 +247,7 @@ function RideMap({
       modifyInteractionRef.current = modifyInteraction
       map.addInteraction(modifyInteraction)
     }
-  }, [allowWaypointEditing, markers, onWaypointMove])
+  }, [allowWaypointEditing, markers, onWaypointMove, preserveViewOnMarkerChange])
 
   useEffect(() => {
     const map = mapRef.current
