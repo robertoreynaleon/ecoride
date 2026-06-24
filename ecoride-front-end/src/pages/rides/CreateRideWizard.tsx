@@ -1,7 +1,8 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Fragment, useState, type ChangeEvent, type FormEvent } from 'react'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
 import type { RideWizardData, RouteChoice } from '../../types/rideWizard'
+import './CreateRideWizard.scss'
 
 const WIZARD_STEPS = [
   'Départ',
@@ -39,6 +40,10 @@ const initialRideWizardData: RideWizardData = {
 function CreateRideWizard() {
   const [currentStep, setCurrentStep] = useState(FIRST_STEP)
   const [rideData, setRideData] = useState<RideWizardData>(initialRideWizardData)
+  const visibleProgressSteps = WIZARD_STEPS.map((stepLabel, index) => ({
+    label: stepLabel,
+    number: index + 1,
+  })).filter(({ number }) => Math.abs(number - currentStep) <= 1)
 
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(FIRST_STEP, step - 1))
@@ -101,16 +106,20 @@ function CreateRideWizard() {
 
         <section className="ride-wizard__progress" aria-label="Progression du formulaire">
           <ol>
-            {WIZARD_STEPS.map((stepLabel, index) => {
-              const stepNumber = index + 1
-
+            {visibleProgressSteps.map((step, index) => {
               return (
-                <li
-                  key={stepLabel}
-                  aria-current={currentStep === stepNumber ? 'step' : undefined}
-                >
-                  {stepLabel}
-                </li>
+                <Fragment key={step.label}>
+                  {index > 0 && (
+                    <li className="ride-wizard__progress-arrow" aria-hidden="true">
+                      {step.number <= currentStep ? '←' : '→'}
+                    </li>
+                  )}
+                  <li aria-current={currentStep === step.number ? 'step' : undefined}>
+                    {step.number < currentStep && <span aria-hidden="true">← </span>}
+                    {step.number}. {step.label}
+                    {step.number > currentStep && <span aria-hidden="true"> →</span>}
+                  </li>
+                </Fragment>
               )
             })}
           </ol>
@@ -384,7 +393,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="submit">Publier le trajet</button>
+                <button type="submit">Confirmer le trajet</button>
               </div>
             </section>
           )}

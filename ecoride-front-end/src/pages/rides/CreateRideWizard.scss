@@ -1,0 +1,276 @@
+@use '../../styles/variables' as *;
+
+.ride-wizard {
+  width: 100%;
+  min-height: 0;
+  padding: $space-6 $content-padding-desktop;
+  overflow-y: auto;
+  flex: 1;
+  color: $color-text;
+  background: $color-background;
+
+  &__intro {
+    max-width: 48rem;
+    margin: 0 auto $space-5;
+
+    p,
+    h1 {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 44rem;
+      margin-top: $space-2;
+      font-size: clamp($font-size-2xl, 4vw, $font-size-4xl);
+      font-weight: $font-weight-bold;
+      line-height: $line-height-tight;
+      color: $color-text-inverse;
+    }
+  }
+
+  &__eyebrow {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+
+  &__progress,
+  &__form {
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+
+  &__progress {
+    margin-bottom: $space-5;
+
+    ol {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      gap: $space-2;
+      flex-wrap: wrap;
+      list-style: none;
+    }
+
+    li {
+      padding: $space-2 $space-3;
+      border: $border-default;
+      border-radius: $radius-pill;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      line-height: $line-height-control;
+      color: $color-text;
+      background: $color-surface;
+
+      &[aria-current='step'] {
+        border-color: $color-primary;
+        color: $color-text-inverse;
+        background: $color-primary;
+      }
+    }
+
+    &-arrow {
+      border: 0;
+      padding-inline: 0;
+      color: $color-text-inverse;
+      background: transparent;
+    }
+  }
+
+  &__form {
+    padding: $space-5;
+    border: $border-accent;
+    border-radius: $radius-image;
+    box-shadow: 0 0 0 $border-width-medium $color-surface;
+    background: $color-surface;
+  }
+
+  &__step {
+    display: grid;
+    gap: $space-4;
+
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h2 {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      line-height: $line-height-heading;
+    }
+
+    h3 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      line-height: $line-height-heading;
+    }
+
+    p {
+      font-size: $font-size-base;
+      line-height: $line-height-body;
+    }
+  }
+
+  label,
+  legend {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-control;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 0;
+    border-bottom: $border-default;
+    border-radius: 0;
+    padding: $space-2 0;
+    color: $color-text;
+    background: transparent;
+
+    &:focus {
+      outline: 0;
+      border-color: $color-primary;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  fieldset {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    gap: $space-5;
+    flex-wrap: wrap;
+
+    label {
+      display: inline-flex;
+      gap: $space-2;
+      align-items: center;
+      font-weight: $font-weight-regular;
+    }
+
+    input {
+      width: auto;
+    }
+  }
+
+  &__map {
+    display: flex;
+    min-height: 12rem;
+    border: $border-default;
+    border-radius: $radius-md;
+    align-items: center;
+    justify-content: center;
+    color: $color-border;
+    background: rgb(255 255 255 / 28%);
+  }
+
+  &__route-summary {
+    display: flex;
+    margin: 0;
+    gap: $space-5;
+    flex-wrap: wrap;
+
+    div {
+      min-width: 10rem;
+    }
+
+    dt {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+    }
+
+    dd {
+      margin: $space-1 0 0;
+    }
+  }
+
+  &__waypoints {
+    display: grid;
+    gap: $space-2;
+  }
+
+  &__actions {
+    display: flex;
+    margin-top: $space-2;
+    gap: $space-3;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  button {
+    min-height: 3rem;
+    border: 0;
+    border-radius: $radius-pill;
+    padding: $space-2 $space-5;
+    font-weight: $font-weight-button;
+    line-height: $line-height-control;
+    color: $color-text-inverse;
+    cursor: pointer;
+    background: $color-primary;
+    transition: background $transition-fast;
+
+    &:hover {
+      background: $color-charcoal;
+    }
+
+    &:focus-visible {
+      outline: 0;
+      box-shadow: $focus-ring;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-desktop) {
+  .ride-wizard {
+    padding: $space-5 clamp($space-5, 4vw, $space-7);
+
+    &__form {
+      padding: $space-4;
+      border-radius: $radius-md;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .ride-wizard {
+    padding: $space-4 clamp(0.875rem, 4vw, 1.5rem);
+
+    &__intro {
+      margin-bottom: $space-4;
+
+      h1 {
+        font-size: clamp($font-size-xl, 8vw, $font-size-3xl);
+      }
+    }
+
+    &__progress {
+      margin-bottom: $space-4;
+    }
+
+    &__step {
+      h2 {
+        font-size: $font-size-xl;
+      }
+    }
+
+    &__map {
+      min-height: 9rem;
+    }
+
+    &__actions {
+      justify-content: stretch;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+}
