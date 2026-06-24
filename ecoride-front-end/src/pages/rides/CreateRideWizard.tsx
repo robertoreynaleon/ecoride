@@ -17,14 +17,16 @@ import './CreateRideWizard.scss'
 const WIZARD_STEPS = [
   'Départ',
   'Destination',
-  'Itinéraire',
   'Correspondances',
+  'Itinéraire',
   'Détails',
   'Description',
   'Récapitulatif',
 ] as const
 
 const FIRST_STEP = 1
+const WAYPOINTS_STEP = 3
+const ROUTE_STEP = 4
 const LAST_STEP = WIZARD_STEPS.length
 const ROUTE_CHOICES: RouteChoice[] = ['with_tolls', 'no_tolls']
 const ROUTE_CHOICE_LABELS: Record<RouteChoice, string> = {
@@ -111,7 +113,13 @@ function CreateRideWizard() {
       return 'Sélectionnez une adresse de destination dans les suggestions.'
     }
 
-    if (currentStep === 3) {
+    if (currentStep === WAYPOINTS_STEP) {
+      if (waypointSearch.trim().length > 0) {
+        return 'Sélectionnez une suggestion pour ajouter cet arrêt, ou videz le champ.'
+      }
+    }
+
+    if (currentStep === ROUTE_STEP) {
       if (!rideData.departure.coordinates || !rideData.arrival.coordinates) {
         return 'Sélectionnez un départ et une destination avant de continuer.'
       }
@@ -126,16 +134,6 @@ function CreateRideWizard() {
 
       if (!selectedRouteResult) {
         return 'Attendez le calcul du trajet avant de continuer.'
-      }
-    }
-
-    if (currentStep === 4) {
-      if (waypointSearch.trim().length > 0) {
-        return 'Sélectionnez une suggestion pour ajouter cet arrêt, ou videz le champ.'
-      }
-
-      if (!rideData.estimatedDistanceMeters || !rideData.estimatedDurationSeconds) {
-        return 'Les arrêts ont modifié le trajet. Revenez à l’étape Itinéraire pour recalculer.'
       }
     }
 
@@ -233,7 +231,7 @@ function CreateRideWizard() {
     const start = rideData.departure.coordinates
     const end = rideData.arrival.coordinates
 
-    if (currentStep !== 3 || !start || !end) {
+    if (currentStep !== ROUTE_STEP || !start || !end) {
       return undefined
     }
 
@@ -309,7 +307,7 @@ function CreateRideWizard() {
   useEffect(() => {
     const search = waypointSearch.trim()
 
-    if (currentStep !== 4 || search.length < 3) {
+    if (currentStep !== WAYPOINTS_STEP || search.length < 3) {
       return undefined
     }
 
@@ -737,9 +735,9 @@ function CreateRideWizard() {
             </section>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === ROUTE_STEP && (
             <section className="ride-wizard__step" aria-labelledby="step-route-title">
-              <h2 id="step-route-title">3. Choix de l’itinéraire</h2>
+              <h2 id="step-route-title">4. Choix de l’itinéraire</h2>
               <p>Comparez le trajet avec péages et le trajet sans péages.</p>
 
               {!rideData.departure.coordinates || !rideData.arrival.coordinates ? (
@@ -830,9 +828,9 @@ function CreateRideWizard() {
             </section>
           )}
 
-          {currentStep === 4 && (
+          {currentStep === WAYPOINTS_STEP && (
             <section className="ride-wizard__step" aria-labelledby="step-waypoints-title">
-              <h2 id="step-waypoints-title">4. Points de correspondance</h2>
+              <h2 id="step-waypoints-title">3. Points de correspondance</h2>
               <p>Ajoutez des arrêts possibles sur votre trajet, si vous le souhaitez.</p>
 
               <label htmlFor="waypoint-location">Ajouter un arrêt</label>
