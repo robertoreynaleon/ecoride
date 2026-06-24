@@ -204,6 +204,10 @@
       gap: $space-2;
       align-items: center;
       font-weight: $font-weight-regular;
+
+      small {
+        color: $color-border;
+      }
     }
 
     input {
@@ -242,9 +246,44 @@
     }
   }
 
+  &__status {
+    padding: $space-3;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    color: $color-border;
+    background: rgb(255 255 255 / 30%);
+
+    &--error {
+      color: $color-primary;
+    }
+  }
+
   &__waypoints {
     display: grid;
     gap: $space-2;
+  }
+
+  &__waypoints-list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    gap: $space-2;
+    list-style: none;
+
+    li {
+      display: flex;
+      padding: $space-3;
+      border: $border-default;
+      border-radius: $radius-md;
+      gap: $space-3;
+      align-items: center;
+      justify-content: space-between;
+      background: rgb(255 255 255 / 30%);
+    }
+  }
+
+  &__remove-waypoint {
+    flex: 0 0 auto;
   }
 
   &__actions {
@@ -287,6 +326,19 @@
 
     &:hover {
       background: rgb(200 35 99 / 10%);
+    }
+  }
+
+  & &__remove-waypoint {
+    min-height: auto;
+    padding: $space-2 $space-3;
+    font-size: $font-size-xs;
+    color: $color-primary;
+    background: rgb(200 35 99 / 10%);
+
+    &:hover {
+      color: $color-text-inverse;
+      background: $color-primary;
     }
   }
 }

@@ -5,6 +5,10 @@ import {
   fetchAddressSuggestions,
   type AddressSuggestion,
 } from '../../services/geocodingService'
+import {
+  calculateRoute,
+  type RouteCalculationResult,
+} from '../../services/routingService'
 import type { RideWizardData, RouteChoice } from '../../types/rideWizard'
 import './CreateRideWizard.scss'
 
@@ -20,6 +24,31 @@ const WIZARD_STEPS = [
 
 const FIRST_STEP = 1
 const LAST_STEP = WIZARD_STEPS.length
+const ROUTE_CHOICES: RouteChoice[] = ['with_tolls', 'no_tolls']
+
+function formatDistance(distanceMeters?: number): string {
+  if (!distanceMeters) {
+    return '-'
+  }
+
+  return `${(distanceMeters / 1000).toFixed(1)} km`
+}
+
+function formatDuration(durationSeconds?: number): string {
+  if (!durationSeconds) {
+    return '-'
+  }
+
+  const totalMinutes = Math.round(durationSeconds / 60)
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  if (hours > 0) {
+    return `${hours} h ${minutes} min`
+  }
+
+  return `${minutes} min`
+}
 
 const initialRideWizardData: RideWizardData = {
   departure: {
@@ -52,10 +81,19 @@ function CreateRideWizard() {
   const [selectedArrivalAddress, setSelectedArrivalAddress] = useState('')
   const [isSearchingArrival, setIsSearchingArrival] = useState(false)
   const [arrivalSearchError, setArrivalSearchError] = useState('')
+  const [routeResults, setRouteResults] = useState<Partial<Record<RouteChoice, RouteCalculationResult>>>({})
+  const [isCalculatingRoutes, setIsCalculatingRoutes] = useState(false)
+  const [routeCalculationError, setRouteCalculationError] = useState('')
+  const [waypointSearch, setWaypointSearch] = useState('')
+  const [waypointSuggestions, setWaypointSuggestions] = useState<AddressSuggestion[]>([])
+  const [isSearchingWaypoint, setIsSearchingWaypoint] = useState(false)
+  const [waypointSearchError, setWaypointSearchError] = useState('')
   const visibleProgressSteps = WIZARD_STEPS.map((stepLabel, index) => ({
     label: stepLabel,
     number: index + 1,
   })).filter(({ number }) => Math.abs(number - currentStep) <= 1)
+
+  const selectedRouteResult = routeResults[rideData.routeChoice]
 
   useEffect(() => {
     const search = rideData.departure.address.trim()
@@ -123,6 +161,107 @@ function CreateRideWizard() {
     }
   }, [rideData.arrival.address, selectedArrivalAddress])
 
+  useEffect(() => {
+    const start = rideData.departure.coordinates
+    const end = rideData.arrival.coordinates
+
+    if (currentStep !== 3 || !start || !end) {
+      return undefined
+    }
+
+    const routeStart = start
+    const routeEnd = end
+    const abortController = new AbortController()
+
+    async function loadRouteOptions() {
+      try {
+        setIsCalculatingRoutes(true)
+        setRouteCalculationError('')
+
+        const routeEntries = await Promise.all(
+          ROUTE_CHOICES.map(async (routeChoice) => {
+            const route = await calculateRoute({
+              start: routeStart,
+              end: routeEnd,
+              routeChoice,
+              signal: abortController.signal,
+            })
+
+            return [routeChoice, route] as const
+          }),
+        )
+
+        const routes = Object.fromEntries(routeEntries) as Record<
+          RouteChoice,
+          RouteCalculationResult
+        >
+
+        setRouteResults(routes)
+        setRideData((currentData) => {
+          const selectedRoute = routes[currentData.routeChoice]
+
+          return {
+            ...currentData,
+            estimatedDistanceMeters: selectedRoute.distanceMeters,
+            estimatedDurationSeconds: selectedRoute.durationSeconds,
+          }
+        })
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
+
+        setRouteResults({})
+        setRouteCalculationError(
+          error instanceof Error
+            ? error.message
+            : 'Impossible de calculer les trajets pour le moment.',
+        )
+      } finally {
+        setIsCalculatingRoutes(false)
+      }
+    }
+
+    void loadRouteOptions()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [currentStep, rideData.departure.coordinates, rideData.arrival.coordinates])
+
+  useEffect(() => {
+    const search = waypointSearch.trim()
+
+    if (currentStep !== 4 || search.length < 3) {
+      return undefined
+    }
+
+    const abortController = new AbortController()
+    const searchTimeout = window.setTimeout(async () => {
+      try {
+        setIsSearchingWaypoint(true)
+        setWaypointSearchError('')
+
+        const suggestions = await fetchAddressSuggestions(search, abortController.signal)
+        setWaypointSuggestions(suggestions)
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
+
+        setWaypointSuggestions([])
+        setWaypointSearchError('Impossible de récupérer les suggestions pour le moment.')
+      } finally {
+        setIsSearchingWaypoint(false)
+      }
+    }, 300)
+
+    return () => {
+      window.clearTimeout(searchTimeout)
+      abortController.abort()
+    }
+  }, [currentStep, waypointSearch])
+
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(FIRST_STEP, step - 1))
   }
@@ -149,7 +288,10 @@ function CreateRideWizard() {
         address,
         coordinates: null,
       },
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
+    setRouteResults({})
   }
 
   const selectDepartureSuggestion = (suggestion: AddressSuggestion) => {
@@ -163,7 +305,10 @@ function CreateRideWizard() {
         address: suggestion.label,
         coordinates: suggestion.coordinates,
       },
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
+    setRouteResults({})
   }
 
   const updateArrivalAddress = (event: ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +329,10 @@ function CreateRideWizard() {
         address,
         coordinates: null,
       },
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
+    setRouteResults({})
   }
 
   const selectArrivalSuggestion = (suggestion: AddressSuggestion) => {
@@ -198,13 +346,63 @@ function CreateRideWizard() {
         address: suggestion.label,
         coordinates: suggestion.coordinates,
       },
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
     }))
+    setRouteResults({})
   }
 
   const updateRouteChoice = (event: ChangeEvent<HTMLInputElement>) => {
+    const routeChoice = event.target.value as RouteChoice
+    const route = routeResults[routeChoice]
+
     setRideData((currentData) => ({
       ...currentData,
-      routeChoice: event.target.value as RouteChoice,
+      routeChoice,
+      estimatedDistanceMeters: route?.distanceMeters ?? currentData.estimatedDistanceMeters,
+      estimatedDurationSeconds: route?.durationSeconds ?? currentData.estimatedDurationSeconds,
+    }))
+  }
+
+  const updateWaypointSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    const search = event.target.value
+    setWaypointSearch(search)
+
+    if (search.trim().length < 3) {
+      setWaypointSuggestions([])
+      setIsSearchingWaypoint(false)
+      setWaypointSearchError('')
+    }
+  }
+
+  const addWaypoint = (suggestion: AddressSuggestion) => {
+    setRideData((currentData) => ({
+      ...currentData,
+      waypoints: [
+        ...currentData.waypoints,
+        {
+          id: `${Date.now()}-${suggestion.id}`,
+          address: suggestion.label,
+          coordinates: suggestion.coordinates,
+          order: currentData.waypoints.length + 1,
+        },
+      ],
+    }))
+
+    setWaypointSearch('')
+    setWaypointSuggestions([])
+    setWaypointSearchError('')
+  }
+
+  const removeWaypoint = (waypointId: string) => {
+    setRideData((currentData) => ({
+      ...currentData,
+      waypoints: currentData.waypoints
+        .filter((waypoint) => waypoint.id !== waypointId)
+        .map((waypoint, index) => ({
+          ...waypoint,
+          order: index + 1,
+        })),
     }))
   }
 
@@ -365,6 +563,24 @@ function CreateRideWizard() {
               <h2 id="step-route-title">3. Choix de l’itinéraire</h2>
               <p>Comparez le trajet avec péages et le trajet sans péages.</p>
 
+              {!rideData.departure.coordinates || !rideData.arrival.coordinates ? (
+                <p className="ride-wizard__status">
+                  Sélectionnez une suggestion de départ et une suggestion de destination avant de
+                  calculer les itinéraires.
+                </p>
+              ) : (
+                <>
+                  {isCalculatingRoutes && (
+                    <p className="ride-wizard__status">Calcul des itinéraires en cours...</p>
+                  )}
+                  {routeCalculationError && (
+                    <p className="ride-wizard__status ride-wizard__status--error">
+                      {routeCalculationError}
+                    </p>
+                  )}
+                </>
+              )}
+
               <div className="ride-wizard__map" aria-label="Carte des itinéraires proposés">
                 Carte des itinéraires proposés
               </div>
@@ -382,6 +598,12 @@ function CreateRideWizard() {
                     onChange={updateRouteChoice}
                   />
                   Avec péages
+                  {routeResults.with_tolls && (
+                    <small>
+                      {formatDistance(routeResults.with_tolls.distanceMeters)} ·{' '}
+                      {formatDuration(routeResults.with_tolls.durationSeconds)}
+                    </small>
+                  )}
                 </label>
 
                 <label htmlFor="route-without-tolls">
@@ -394,17 +616,23 @@ function CreateRideWizard() {
                     onChange={updateRouteChoice}
                   />
                   Sans péages
+                  {routeResults.no_tolls && (
+                    <small>
+                      {formatDistance(routeResults.no_tolls.distanceMeters)} ·{' '}
+                      {formatDuration(routeResults.no_tolls.durationSeconds)}
+                    </small>
+                  )}
                 </label>
               </fieldset>
 
               <dl className="ride-wizard__route-summary">
                 <div>
                   <dt>Distance estimée</dt>
-                  <dd>{rideData.estimatedDistanceMeters ?? '-'}</dd>
+                  <dd>{formatDistance(selectedRouteResult?.distanceMeters)}</dd>
                 </div>
                 <div>
                   <dt>Durée estimée</dt>
-                  <dd>{rideData.estimatedDurationSeconds ?? '-'}</dd>
+                  <dd>{formatDuration(selectedRouteResult?.durationSeconds)}</dd>
                 </div>
               </dl>
 
@@ -424,7 +652,38 @@ function CreateRideWizard() {
               <h2 id="step-waypoints-title">4. Points de correspondance</h2>
               <p>Ajoutez des arrêts possibles sur votre trajet, si vous le souhaitez.</p>
 
-              <button type="button">Ajouter un arrêt sur la carte</button>
+              <label htmlFor="waypoint-location">Ajouter un arrêt</label>
+              <input
+                id="waypoint-location"
+                name="waypointLocation"
+                type="text"
+                placeholder="Adresse, ville ou point de rendez-vous"
+                value={waypointSearch}
+                onChange={updateWaypointSearch}
+                autoComplete="off"
+                aria-describedby="waypoint-location-help"
+              />
+
+              <div id="waypoint-location-help" className="ride-wizard__field-help">
+                {isSearchingWaypoint && <p>Recherche d’adresses en cours...</p>}
+                {waypointSearchError && <p>{waypointSearchError}</p>}
+                {waypointSuggestions.length > 0 && (
+                  <ul className="ride-wizard__suggestions" aria-label="Suggestions d’arrêts">
+                    {waypointSuggestions.map((suggestion) => (
+                      <li key={suggestion.id}>
+                        <button type="button" onClick={() => addWaypoint(suggestion)}>
+                          <span>{suggestion.label}</span>
+                          {(suggestion.postcode || suggestion.city) && (
+                            <small>
+                              {suggestion.postcode} {suggestion.city}
+                            </small>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
               <div className="ride-wizard__map" aria-label="Carte des points de correspondance">
                 Carte des points de correspondance
@@ -435,9 +694,20 @@ function CreateRideWizard() {
                 {rideData.waypoints.length === 0 ? (
                   <p>Aucun arrêt ajouté pour le moment.</p>
                 ) : (
-                  <ol>
+                  <ol className="ride-wizard__waypoints-list">
                     {rideData.waypoints.map((waypoint) => (
-                      <li key={waypoint.id}>{waypoint.address}</li>
+                      <li key={waypoint.id}>
+                        <span>
+                          Arrêt {waypoint.order} : {waypoint.address}
+                        </span>
+                        <button
+                          className="ride-wizard__remove-waypoint"
+                          type="button"
+                          onClick={() => removeWaypoint(waypoint.id)}
+                        >
+                          Supprimer
+                        </button>
+                      </li>
                     ))}
                   </ol>
                 )}
