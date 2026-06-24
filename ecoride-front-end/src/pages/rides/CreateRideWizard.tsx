@@ -92,12 +92,74 @@ function CreateRideWizard() {
   const [waypointSuggestions, setWaypointSuggestions] = useState<AddressSuggestion[]>([])
   const [isSearchingWaypoint, setIsSearchingWaypoint] = useState(false)
   const [waypointSearchError, setWaypointSearchError] = useState('')
+  const [validationMessage, setValidationMessage] = useState('')
   const visibleProgressSteps = WIZARD_STEPS.map((stepLabel, index) => ({
     label: stepLabel,
     number: index + 1,
   })).filter(({ number }) => Math.abs(number - currentStep) <= 1)
 
   const selectedRouteResult = routeResults[rideData.routeChoice]
+
+  const getCurrentStepValidationMessage = (): string => {
+    if (currentStep === 1 && !rideData.departure.coordinates) {
+      return 'Sélectionnez une adresse de départ dans les suggestions.'
+    }
+
+    if (currentStep === 2 && !rideData.arrival.coordinates) {
+      return 'Sélectionnez une adresse de destination dans les suggestions.'
+    }
+
+    if (currentStep === 3) {
+      if (!rideData.departure.coordinates || !rideData.arrival.coordinates) {
+        return 'Sélectionnez un départ et une destination avant de continuer.'
+      }
+
+      if (isCalculatingRoutes) {
+        return 'Patientez pendant le calcul des itinéraires.'
+      }
+
+      if (routeCalculationError) {
+        return routeCalculationError
+      }
+
+      if (!selectedRouteResult) {
+        return 'Attendez le calcul du trajet avant de continuer.'
+      }
+    }
+
+    if (currentStep === 4) {
+      if (waypointSearch.trim().length > 0) {
+        return 'Sélectionnez une suggestion pour ajouter cet arrêt, ou videz le champ.'
+      }
+
+      if (!rideData.estimatedDistanceMeters || !rideData.estimatedDurationSeconds) {
+        return 'Les arrêts ont modifié le trajet. Revenez à l’étape Itinéraire pour recalculer.'
+      }
+    }
+
+    if (currentStep === 5) {
+      const seatsAvailable = Number(rideData.seatsAvailable)
+      const price = Number(rideData.price)
+
+      if (!rideData.departureDate) {
+        return 'Renseignez la date de départ.'
+      }
+
+      if (!rideData.departureTime) {
+        return 'Renseignez l’heure de départ.'
+      }
+
+      if (!Number.isInteger(seatsAvailable) || seatsAvailable < 1 || seatsAvailable > 9) {
+        return 'Renseignez un nombre de places entre 1 et 9.'
+      }
+
+      if (rideData.price === '' || Number.isNaN(price) || price < 0) {
+        return 'Renseignez un prix valide.'
+      }
+    }
+
+    return ''
+  }
 
   useEffect(() => {
     const search = rideData.departure.address.trim()
@@ -276,6 +338,7 @@ function CreateRideWizard() {
   }, [currentStep, waypointSearch])
 
   const goToPreviousStep = () => {
+    setValidationMessage('')
     setCurrentStep((step) => Math.max(FIRST_STEP, step - 1))
   }
 
@@ -283,9 +346,22 @@ function CreateRideWizard() {
     setCurrentStep((step) => Math.min(LAST_STEP, step + 1))
   }
 
+  const handleNextStep = () => {
+    const message = getCurrentStepValidationMessage()
+
+    if (message) {
+      setValidationMessage(message)
+      return
+    }
+
+    setValidationMessage('')
+    goToNextStep()
+  }
+
   const updateDepartureAddress = (event: ChangeEvent<HTMLInputElement>) => {
     const address = event.target.value
 
+    setValidationMessage('')
     setSelectedDepartureAddress('')
 
     if (address.trim().length < 3) {
@@ -308,6 +384,7 @@ function CreateRideWizard() {
   }
 
   const selectDepartureSuggestion = (suggestion: AddressSuggestion) => {
+    setValidationMessage('')
     setSelectedDepartureAddress(suggestion.label)
     setDepartureSuggestions([])
     setDepartureSearchError('')
@@ -327,6 +404,7 @@ function CreateRideWizard() {
   const updateArrivalAddress = (event: ChangeEvent<HTMLInputElement>) => {
     const address = event.target.value
 
+    setValidationMessage('')
     setSelectedArrivalAddress('')
 
     if (address.trim().length < 3) {
@@ -349,6 +427,7 @@ function CreateRideWizard() {
   }
 
   const selectArrivalSuggestion = (suggestion: AddressSuggestion) => {
+    setValidationMessage('')
     setSelectedArrivalAddress(suggestion.label)
     setArrivalSuggestions([])
     setArrivalSearchError('')
@@ -369,6 +448,7 @@ function CreateRideWizard() {
     const routeChoice = event.target.value as RouteChoice
     const route = routeResults[routeChoice]
 
+    setValidationMessage('')
     setRideData((currentData) => ({
       ...currentData,
       routeChoice,
@@ -379,6 +459,8 @@ function CreateRideWizard() {
 
   const updateWaypointSearch = (event: ChangeEvent<HTMLInputElement>) => {
     const search = event.target.value
+
+    setValidationMessage('')
     setWaypointSearch(search)
 
     if (search.trim().length < 3) {
@@ -389,6 +471,7 @@ function CreateRideWizard() {
   }
 
   const addWaypoint = (suggestion: AddressSuggestion) => {
+    setValidationMessage('')
     setRideData((currentData) => ({
       ...currentData,
       waypoints: [
@@ -411,6 +494,7 @@ function CreateRideWizard() {
   }
 
   const removeWaypoint = (waypointId: string) => {
+    setValidationMessage('')
     setRideData((currentData) => ({
       ...currentData,
       waypoints: currentData.waypoints
@@ -429,6 +513,7 @@ function CreateRideWizard() {
     field: 'departureDate' | 'departureTime' | 'seatsAvailable' | 'price' | 'description',
     value: string,
   ) => {
+    setValidationMessage('')
     setRideData((currentData) => ({
       ...currentData,
       [field]: value,
@@ -471,6 +556,12 @@ function CreateRideWizard() {
         </section>
 
         <form className="ride-wizard__form" action="#" method="post" onSubmit={handleSubmit}>
+          {validationMessage && (
+            <p className="ride-wizard__status ride-wizard__status--error" role="alert">
+              {validationMessage}
+            </p>
+          )}
+
           {currentStep === 1 && (
             <section className="ride-wizard__step" aria-labelledby="step-departure-title">
               <h2 id="step-departure-title">1. Point de départ</h2>
@@ -517,7 +608,7 @@ function CreateRideWizard() {
               </div>
 
               <div className="ride-wizard__actions">
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
@@ -570,7 +661,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
@@ -659,7 +750,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
@@ -736,7 +827,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
@@ -792,7 +883,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
@@ -818,7 +909,7 @@ function CreateRideWizard() {
                 <button type="button" onClick={goToPreviousStep}>
                   Précédent
                 </button>
-                <button type="button" onClick={goToNextStep}>
+                <button type="button" onClick={handleNextStep}>
                   Suivant
                 </button>
               </div>
