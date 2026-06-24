@@ -141,6 +141,56 @@
     resize: vertical;
   }
 
+  &__field-help {
+    display: grid;
+    gap: $space-2;
+
+    p {
+      font-size: $font-size-sm;
+      color: $color-border;
+    }
+  }
+
+  &__suggestions {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border: $border-default;
+    border-radius: $radius-md;
+    overflow: hidden;
+    list-style: none;
+    background: rgb(255 255 255 / 30%);
+
+    li + li {
+      border-top: $border-default;
+    }
+
+    button {
+      display: grid;
+      width: 100%;
+      min-height: auto;
+      border-radius: 0;
+      padding: $space-3;
+      gap: $space-1;
+      color: $color-text;
+      text-align: left;
+      background: transparent;
+
+      &:hover {
+        background: rgb(200 35 99 / 10%);
+      }
+
+      span {
+        font-weight: $font-weight-semibold;
+      }
+
+      small {
+        font-size: $font-size-xs;
+        color: $color-border;
+      }
+    }
+  }
+
   fieldset {
     display: flex;
     margin: 0;
@@ -224,6 +274,19 @@
     &:focus-visible {
       outline: 0;
       box-shadow: $focus-ring;
+    }
+  }
+
+  & &__suggestions button {
+    min-height: auto;
+    border-radius: 0;
+    padding: $space-3;
+    color: $color-text;
+    text-align: left;
+    background: transparent;
+
+    &:hover {
+      background: rgb(200 35 99 / 10%);
     }
   }
 }

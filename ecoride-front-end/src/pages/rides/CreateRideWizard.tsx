@@ -1,6 +1,10 @@
-import { Fragment, useState, type ChangeEvent, type FormEvent } from 'react'
+import { Fragment, useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
+import {
+  fetchAddressSuggestions,
+  type AddressSuggestion,
+} from '../../services/geocodingService'
 import type { RideWizardData, RouteChoice } from '../../types/rideWizard'
 import './CreateRideWizard.scss'
 
@@ -40,10 +44,47 @@ const initialRideWizardData: RideWizardData = {
 function CreateRideWizard() {
   const [currentStep, setCurrentStep] = useState(FIRST_STEP)
   const [rideData, setRideData] = useState<RideWizardData>(initialRideWizardData)
+  const [departureSuggestions, setDepartureSuggestions] = useState<AddressSuggestion[]>([])
+  const [selectedDepartureAddress, setSelectedDepartureAddress] = useState('')
+  const [isSearchingDeparture, setIsSearchingDeparture] = useState(false)
+  const [departureSearchError, setDepartureSearchError] = useState('')
   const visibleProgressSteps = WIZARD_STEPS.map((stepLabel, index) => ({
     label: stepLabel,
     number: index + 1,
   })).filter(({ number }) => Math.abs(number - currentStep) <= 1)
+
+  useEffect(() => {
+    const search = rideData.departure.address.trim()
+
+    if (search.length < 3 || search === selectedDepartureAddress) {
+      return undefined
+    }
+
+    const abortController = new AbortController()
+    const searchTimeout = window.setTimeout(async () => {
+      try {
+        setIsSearchingDeparture(true)
+        setDepartureSearchError('')
+
+        const suggestions = await fetchAddressSuggestions(search, abortController.signal)
+        setDepartureSuggestions(suggestions)
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
+
+        setDepartureSuggestions([])
+        setDepartureSearchError('Impossible de récupérer les suggestions pour le moment.')
+      } finally {
+        setIsSearchingDeparture(false)
+      }
+    }, 300)
+
+    return () => {
+      window.clearTimeout(searchTimeout)
+      abortController.abort()
+    }
+  }, [rideData.departure.address, selectedDepartureAddress])
 
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(FIRST_STEP, step - 1))
@@ -54,11 +95,36 @@ function CreateRideWizard() {
   }
 
   const updateDepartureAddress = (event: ChangeEvent<HTMLInputElement>) => {
+    const address = event.target.value
+
+    setSelectedDepartureAddress('')
+
+    if (address.trim().length < 3) {
+      setDepartureSuggestions([])
+      setIsSearchingDeparture(false)
+      setDepartureSearchError('')
+    }
+
     setRideData((currentData) => ({
       ...currentData,
       departure: {
         ...currentData.departure,
-        address: event.target.value,
+        address,
+        coordinates: null,
+      },
+    }))
+  }
+
+  const selectDepartureSuggestion = (suggestion: AddressSuggestion) => {
+    setSelectedDepartureAddress(suggestion.label)
+    setDepartureSuggestions([])
+    setDepartureSearchError('')
+
+    setRideData((currentData) => ({
+      ...currentData,
+      departure: {
+        address: suggestion.label,
+        coordinates: suggestion.coordinates,
       },
     }))
   }
@@ -139,7 +205,33 @@ function CreateRideWizard() {
                 placeholder="Adresse, ville ou point de rendez-vous"
                 value={rideData.departure.address}
                 onChange={updateDepartureAddress}
+                autoComplete="off"
+                aria-describedby="departure-location-help"
               />
+
+              <div id="departure-location-help" className="ride-wizard__field-help">
+                {isSearchingDeparture && <p>Recherche d’adresses en cours...</p>}
+                {departureSearchError && <p>{departureSearchError}</p>}
+                {departureSuggestions.length > 0 && (
+                  <ul className="ride-wizard__suggestions" aria-label="Suggestions de départ">
+                    {departureSuggestions.map((suggestion) => (
+                      <li key={suggestion.id}>
+                        <button
+                          type="button"
+                          onClick={() => selectDepartureSuggestion(suggestion)}
+                        >
+                          <span>{suggestion.label}</span>
+                          {(suggestion.postcode || suggestion.city) && (
+                            <small>
+                              {suggestion.postcode} {suggestion.city}
+                            </small>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
               <div className="ride-wizard__map" aria-label="Carte du point de départ">
                 Carte du point de départ
