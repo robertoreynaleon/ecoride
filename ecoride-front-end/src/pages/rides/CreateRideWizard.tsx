@@ -1,8 +1,10 @@
 import { Fragment, useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
+import RideMap from '../../components/RideMap'
 import {
   fetchAddressSuggestions,
+  reverseGeocodeCoordinates,
   type AddressSuggestion,
 } from '../../services/geocodingService'
 import {
@@ -509,6 +511,77 @@ function CreateRideWizard() {
     setRouteResults({})
   }
 
+  const addWaypointFromMap = async (coordinates: { lon: number; lat: number }) => {
+    setValidationMessage('')
+
+    try {
+      const suggestion = await reverseGeocodeCoordinates(coordinates)
+
+      setRideData((currentData) => ({
+        ...currentData,
+        waypoints: [
+          ...currentData.waypoints,
+          {
+            id: `${Date.now()}-map-waypoint`,
+            address: suggestion?.label ?? 'Point ajouté sur la carte',
+            coordinates,
+            order: currentData.waypoints.length + 1,
+          },
+        ],
+        estimatedDistanceMeters: null,
+        estimatedDurationSeconds: null,
+      }))
+      setRouteResults({})
+    } catch {
+      setRideData((currentData) => ({
+        ...currentData,
+        waypoints: [
+          ...currentData.waypoints,
+          {
+            id: `${Date.now()}-map-waypoint`,
+            address: 'Point ajouté sur la carte',
+            coordinates,
+            order: currentData.waypoints.length + 1,
+          },
+        ],
+        estimatedDistanceMeters: null,
+        estimatedDurationSeconds: null,
+      }))
+      setRouteResults({})
+    }
+  }
+
+  const moveWaypointOnMap = async (waypointId: string, coordinates: { lon: number; lat: number }) => {
+    setValidationMessage('')
+
+    let address = 'Point déplacé sur la carte'
+
+    try {
+      const suggestion = await reverseGeocodeCoordinates(coordinates)
+      address = suggestion?.label ?? address
+    } catch {
+      address = 'Point déplacé sur la carte'
+    }
+
+    setRideData((currentData) => ({
+      ...currentData,
+      waypoints: currentData.waypoints.map((waypoint) => {
+        if (waypoint.id !== waypointId) {
+          return waypoint
+        }
+
+        return {
+          ...waypoint,
+          address,
+          coordinates,
+        }
+      }),
+      estimatedDistanceMeters: null,
+      estimatedDurationSeconds: null,
+    }))
+    setRouteResults({})
+  }
+
   const updateRideField = (
     field: 'departureDate' | 'departureTime' | 'seatsAvailable' | 'price' | 'description',
     value: string,
@@ -603,9 +676,7 @@ function CreateRideWizard() {
                 )}
               </div>
 
-              <div className="ride-wizard__map" aria-label="Carte du point de départ">
-                Carte du point de départ
-              </div>
+              <RideMap departure={rideData.departure.coordinates} />
 
               <div className="ride-wizard__actions">
                 <button type="button" onClick={handleNextStep}>
@@ -653,9 +724,7 @@ function CreateRideWizard() {
                 )}
               </div>
 
-              <div className="ride-wizard__map" aria-label="Carte de la destination">
-                Carte de la destination
-              </div>
+              <RideMap arrival={rideData.arrival.coordinates} />
 
               <div className="ride-wizard__actions">
                 <button type="button" onClick={goToPreviousStep}>
@@ -691,9 +760,13 @@ function CreateRideWizard() {
                 </>
               )}
 
-              <div className="ride-wizard__map" aria-label="Carte des itinéraires proposés">
-                Carte des itinéraires proposés
-              </div>
+              <RideMap
+                departure={rideData.departure.coordinates}
+                arrival={rideData.arrival.coordinates}
+                waypoints={rideData.waypoints}
+                routeGeometry={selectedRouteResult?.geometry}
+                routeVariant={rideData.routeChoice}
+              />
 
               <fieldset>
                 <legend>Type de trajet</legend>
@@ -795,9 +868,16 @@ function CreateRideWizard() {
                 )}
               </div>
 
-              <div className="ride-wizard__map" aria-label="Carte des points de correspondance">
-                Carte des points de correspondance
-              </div>
+              <RideMap
+                departure={rideData.departure.coordinates}
+                arrival={rideData.arrival.coordinates}
+                waypoints={rideData.waypoints}
+                routeGeometry={selectedRouteResult?.geometry}
+                routeVariant={rideData.routeChoice}
+                allowWaypointEditing
+                onWaypointAdd={addWaypointFromMap}
+                onWaypointMove={moveWaypointOnMap}
+              />
 
               <section className="ride-wizard__waypoints" aria-labelledby="waypoints-list-title">
                 <h3 id="waypoints-list-title">Arrêts ajoutés</h3>
@@ -991,9 +1071,13 @@ function CreateRideWizard() {
                 </dl>
               </section>
 
-              <div className="ride-wizard__map" aria-label="Carte récapitulative du trajet">
-                Carte récapitulative du trajet
-              </div>
+              <RideMap
+                departure={rideData.departure.coordinates}
+                arrival={rideData.arrival.coordinates}
+                waypoints={rideData.waypoints}
+                routeGeometry={selectedRouteResult?.geometry}
+                routeVariant={rideData.routeChoice}
+              />
 
               <div className="ride-wizard__actions">
                 <button type="button" onClick={goToPreviousStep}>

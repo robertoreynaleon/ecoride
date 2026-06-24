@@ -215,14 +215,12 @@
     }
   }
 
-  &__map {
-    display: flex;
+  .ride-map {
+    width: 100%;
     min-height: 12rem;
     border: $border-default;
     border-radius: $radius-md;
-    align-items: center;
-    justify-content: center;
-    color: $color-border;
+    overflow: hidden;
     background: rgb(255 255 255 / 28%);
   }
 
@@ -414,7 +412,7 @@
       }
     }
 
-    &__map {
+    .ride-map {
       min-height: 9rem;
     }
 
