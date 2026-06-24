@@ -16,7 +16,7 @@ function Home() {
 
             <nav className="home-hero__actions" aria-label="Actions principales">
               <Link to="/login">Se connecter</Link>
-              <a href="/rides/new">Proposer un trajet</a>
+              <Link to="/rides/new">Proposer un trajet</Link>
             </nav>
           </div>
 
