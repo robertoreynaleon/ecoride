@@ -48,6 +48,10 @@ function CreateRideWizard() {
   const [selectedDepartureAddress, setSelectedDepartureAddress] = useState('')
   const [isSearchingDeparture, setIsSearchingDeparture] = useState(false)
   const [departureSearchError, setDepartureSearchError] = useState('')
+  const [arrivalSuggestions, setArrivalSuggestions] = useState<AddressSuggestion[]>([])
+  const [selectedArrivalAddress, setSelectedArrivalAddress] = useState('')
+  const [isSearchingArrival, setIsSearchingArrival] = useState(false)
+  const [arrivalSearchError, setArrivalSearchError] = useState('')
   const visibleProgressSteps = WIZARD_STEPS.map((stepLabel, index) => ({
     label: stepLabel,
     number: index + 1,
@@ -85,6 +89,39 @@ function CreateRideWizard() {
       abortController.abort()
     }
   }, [rideData.departure.address, selectedDepartureAddress])
+
+  useEffect(() => {
+    const search = rideData.arrival.address.trim()
+
+    if (search.length < 3 || search === selectedArrivalAddress) {
+      return undefined
+    }
+
+    const abortController = new AbortController()
+    const searchTimeout = window.setTimeout(async () => {
+      try {
+        setIsSearchingArrival(true)
+        setArrivalSearchError('')
+
+        const suggestions = await fetchAddressSuggestions(search, abortController.signal)
+        setArrivalSuggestions(suggestions)
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
+
+        setArrivalSuggestions([])
+        setArrivalSearchError('Impossible de récupérer les suggestions pour le moment.')
+      } finally {
+        setIsSearchingArrival(false)
+      }
+    }, 300)
+
+    return () => {
+      window.clearTimeout(searchTimeout)
+      abortController.abort()
+    }
+  }, [rideData.arrival.address, selectedArrivalAddress])
 
   const goToPreviousStep = () => {
     setCurrentStep((step) => Math.max(FIRST_STEP, step - 1))
@@ -130,11 +167,36 @@ function CreateRideWizard() {
   }
 
   const updateArrivalAddress = (event: ChangeEvent<HTMLInputElement>) => {
+    const address = event.target.value
+
+    setSelectedArrivalAddress('')
+
+    if (address.trim().length < 3) {
+      setArrivalSuggestions([])
+      setIsSearchingArrival(false)
+      setArrivalSearchError('')
+    }
+
     setRideData((currentData) => ({
       ...currentData,
       arrival: {
         ...currentData.arrival,
-        address: event.target.value,
+        address,
+        coordinates: null,
+      },
+    }))
+  }
+
+  const selectArrivalSuggestion = (suggestion: AddressSuggestion) => {
+    setSelectedArrivalAddress(suggestion.label)
+    setArrivalSuggestions([])
+    setArrivalSearchError('')
+
+    setRideData((currentData) => ({
+      ...currentData,
+      arrival: {
+        address: suggestion.label,
+        coordinates: suggestion.coordinates,
       },
     }))
   }
@@ -258,7 +320,30 @@ function CreateRideWizard() {
                 placeholder="Adresse, ville ou destination finale"
                 value={rideData.arrival.address}
                 onChange={updateArrivalAddress}
+                autoComplete="off"
+                aria-describedby="arrival-location-help"
               />
+
+              <div id="arrival-location-help" className="ride-wizard__field-help">
+                {isSearchingArrival && <p>Recherche d’adresses en cours...</p>}
+                {arrivalSearchError && <p>{arrivalSearchError}</p>}
+                {arrivalSuggestions.length > 0 && (
+                  <ul className="ride-wizard__suggestions" aria-label="Suggestions d’arrivée">
+                    {arrivalSuggestions.map((suggestion) => (
+                      <li key={suggestion.id}>
+                        <button type="button" onClick={() => selectArrivalSuggestion(suggestion)}>
+                          <span>{suggestion.label}</span>
+                          {(suggestion.postcode || suggestion.city) && (
+                            <small>
+                              {suggestion.postcode} {suggestion.city}
+                            </small>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
               <div className="ride-wizard__map" aria-label="Carte de la destination">
                 Carte de la destination
