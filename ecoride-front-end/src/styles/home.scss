@@ -3,74 +3,95 @@
 .home {
   display: flex;
   width: 100%;
-  height: calc(100svh - $header-height-desktop - $footer-height);
-  min-height: 0;
+  padding: $space-6 $content-padding-mobile $space-8;
   flex: 1;
-  padding: clamp(1.5rem, 5.5svh, 3.5rem) $content-padding-desktop clamp(1rem, 3svh, 2rem);
-  overflow: hidden;
   flex-direction: column;
-  justify-content: flex-start;
+  gap: $space-7;
+  color: $color-text;
   background: $color-background;
 }
 
 .home-hero {
   display: grid;
-  width: calc(100% + 2rem);
-  max-width: calc($container-max-width + 2rem);
+  width: 100%;
+  max-width: $container-max-width;
   margin: 0 auto;
-  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
-  gap: $space-7;
+  gap: $space-5;
   align-items: center;
-  flex: 0 1 auto;
 
   &__content {
     min-width: 0;
+
+    > p {
+      max-width: 38rem;
+      margin: $space-4 0 0;
+      font-size: $font-size-base;
+      line-height: $line-height-body;
+      color: $color-text;
+    }
   }
 
   h1 {
     max-width: 38rem;
     margin: 0;
     font-family: $font-family-body;
-    font-size: clamp(3.25rem, 5vw, $font-size-hero-desktop);
+    font-size: $font-size-hero-mobile;
     font-weight: $font-weight-hero;
-    line-height: $line-height-hero-desktop;
+    line-height: $line-height-hero-mobile;
     letter-spacing: $letter-spacing-default;
-    color: $color-text-inverse;
+    color: $color-text;
   }
 
   &__actions {
     display: flex;
-    margin-top: $space-4;
-    gap: 2.5rem;
+    margin-top: $space-5;
+    gap: $space-3;
     align-items: center;
+    flex-wrap: wrap;
 
     a {
-      border-radius: $radius-sm;
-      font-size: $font-size-link-desktop;
-      font-weight: $font-weight-link;
+      display: inline-flex;
+      min-height: $control-height-button;
+      padding: $space-3 $space-4;
+      border: 2px solid $color-text;
+      border-radius: $radius-pill;
+      align-items: center;
+      justify-content: center;
+      font-size: $font-size-link-mobile;
+      font-weight: $font-weight-semibold;
       line-height: $line-height-control;
       color: $color-text;
+      text-align: center;
       text-decoration: none;
+      transition: background-color $transition-fast, color $transition-fast, transform $transition-fast;
 
       &:hover {
-        text-decoration: underline;
-        text-underline-offset: $space-1;
-      }
-
-      &:focus-visible {
-        outline: 0;
-        box-shadow: $focus-ring;
+        transform: translateY(-1px);
       }
     }
   }
 
+  &__actions &__primary {
+    color: $color-surface;
+    background: $color-text;
+
+    &:hover {
+      background: #000000;
+    }
+  }
+
+  &__secondary:hover {
+    background: rgb(30 30 30 / 10%);
+  }
+
   &__media {
     width: 100%;
-    max-height: min(23rem, 40svh);
     margin: 0;
     overflow: hidden;
     border-radius: $radius-image;
     aspect-ratio: 16 / 9;
+    background: $color-surface;
+    box-shadow: $shadow-control;
 
     img {
       display: block;
@@ -78,199 +99,136 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
+      transition: transform $transition-default;
+    }
+
+    &:hover img {
+      transform: scale(1.06);
     }
   }
 }
 
 .home-benefits {
   width: 100%;
-  max-width: 50rem;
-  margin: 5.5rem auto 0;
+  max-width: $container-max-width;
+  margin: 0 auto;
+
+  > h2 {
+    margin: 0 0 $space-5;
+    font-size: $font-size-xl;
+    line-height: $line-height-heading;
+    color: $color-text;
+  }
 
   &__list {
     display: grid;
-    min-height: clamp(6.5rem, 15svh, 10rem);
     margin: 0;
     padding: 0;
-    grid-template-columns: 5.2rem 2.5rem 7.8rem 2.5rem 9.2rem 2.6rem 8.9rem;
-    gap: clamp($space-3, 1.7vw, $space-5);
-    align-items: start;
-    justify-content: center;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
     list-style: none;
   }
 
   &__item {
+    display: grid;
+    min-width: 0;
+    padding: $space-5;
+    border: $border-default;
+    border-radius: $radius-moderate;
+    grid-template-rows: auto auto 1fr;
+    color: $color-text;
+    background: $color-surface;
+    box-shadow: $shadow-control;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background: $color-cream-dark;
+    }
+
+    h3 {
+      margin: $space-4 0 0;
+      font-size: $font-size-md;
+      line-height: $line-height-heading;
+      color: $color-text;
+    }
+
+    p {
+      margin: $space-2 0 0;
+      font-size: $font-size-base;
+      line-height: $line-height-body;
+      color: $color-text;
+    }
+  }
+
+  &__visual {
     display: flex;
+    height: 96px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 
     img {
       display: block;
-      max-width: 100%;
-      max-height: 6.5rem;
+      width: auto;
+      max-width: 104px;
       height: auto;
-    }
-
-    &:nth-child(1),
-    &:nth-child(5) {
-      align-self: start;
-    }
-
-    &--arrow:nth-child(2) {
-      align-self: end;
-      margin-bottom: 0;
-    }
-
-    &--arrow:nth-child(4) {
-      align-self: start;
-      margin-top: 3.5rem;
-    }
-
-    &--arrow:nth-child(6) {
-      align-self: end;
-      margin-bottom: 1.25rem;
-    }
-
-    &:nth-child(3),
-    &:nth-child(7) {
-      align-self: start;
-      margin-top: 2.625rem;
+      max-height: 96px;
     }
   }
 }
 
-@media (max-width: $breakpoint-desktop) {
+@media (min-width: $breakpoint-sm) {
   .home {
-    width: 100%;
-    height: auto;
-    min-width: 0;
-    min-height: 0;
-    padding: $space-5 clamp($space-5, 4vw, $space-7) $space-6;
-    overflow: visible;
-    flex: 1 0 auto;
-    gap: $space-5;
-    justify-content: flex-start;
+    padding-top: $space-7;
+    gap: $space-8;
   }
 
   .home-hero {
-    display: block;
-    width: 100%;
-    max-width: $container-max-width;
-    margin-inline: auto;
+    gap: $space-6;
 
     h1 {
-      max-width: 34rem;
-      font-size: clamp(2.25rem, 5.5vw, 3.25rem);
-      line-height: 1.16;
+      font-size: $font-size-hero-tablet;
+      line-height: 1.05;
     }
 
-    &__media {
-      display: none;
+    &__actions a {
+      font-size: $font-size-link-desktop;
     }
+  }
 
-    &__actions {
-      margin-top: $space-3;
-      gap: $space-6;
+  .home-benefits__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
-      a {
-        font-size: $font-size-base;
-      }
+@media (min-width: $breakpoint-lg) {
+  .home {
+    padding-top: $space-8;
+  }
+
+  .home-hero {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-8;
+
+    h1 {
+      font-size: $font-size-hero-desktop;
+      line-height: $line-height-hero-desktop;
     }
   }
 
   .home-benefits {
-    display: none;
-  }
-}
-
-@media (max-width: $breakpoint-tablet) {
-  .home {
-    height: auto;
-    padding: $space-4 clamp(0.875rem, 4vw, 1.5rem) $space-5;
-    gap: $space-4;
-  }
-
-  .home-hero {
-    h1 {
-      max-width: 22rem;
-      font-size: clamp(2rem, min(10vw, 5.8svh), 2.5rem);
-      line-height: 1.16;
+    > h2 {
+      font-size: $font-size-2xl;
     }
-
-    &__actions {
-      margin-top: $space-2;
-      gap: $space-5;
-      justify-content: flex-start;
-
-      a {
-        font-size: $font-size-xs;
-        white-space: nowrap;
-      }
-    }
-  }
-}
-
-@media (max-width: $breakpoint-mobile) {
-  .home {
-    padding-inline: clamp(0.875rem, 5.5vw, 1.25rem);
-  }
-
-  .home-hero__actions {
-    justify-content: flex-start;
-    gap: $space-5;
-  }
-
-}
-
-@media (max-height: 50rem) and (min-width: 64.0625rem) {
-  .home {
-    height: calc(100svh - 5rem - $footer-height);
-    padding-block: $space-5 $space-3;
-  }
-
-  .home-hero {
-    h1 {
-      font-size: clamp($font-size-4xl, 4.8vw, 4.25rem);
-      line-height: 1.25;
-    }
-
-    &__media {
-      max-height: 17rem;
-    }
-
-    &__actions {
-      margin-top: $space-2;
-
-      a {
-        font-size: $font-size-base;
-      }
-    }
-  }
-
-  .home-benefits {
-    margin-top: 2.5rem;
 
     &__list {
-      min-height: 7rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: $space-4;
     }
+  }
+}
 
-    &__item {
-      img {
-        max-height: 5rem;
-      }
-
-      &:nth-child(3),
-      &:nth-child(7) {
-        margin-top: 1.5rem;
-      }
-
-      &--arrow:nth-child(4) {
-        margin-top: 2rem;
-      }
-
-      &--arrow:nth-child(6) {
-        margin-bottom: $space-2;
-      }
-    }
+@media (min-width: $breakpoint-xl) {
+  .home-benefits__list {
+    gap: $space-5;
   }
 }

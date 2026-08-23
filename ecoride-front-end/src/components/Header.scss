@@ -1,59 +1,136 @@
 @use '../styles/variables' as *;
 
 .site-header {
-  display: flex;
-  min-height: $header-height-desktop;
-  flex: 0 0 $header-height-desktop;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  color: $color-text;
+  border-bottom: $border-default;
   background: $color-surface;
 
+  &__inner {
+    display: flex;
+    width: 100%;
+    max-width: $container-max-width;
+    min-height: $header-height-mobile;
+    margin: 0 auto;
+    padding: $space-2 $space-3;
+    gap: $space-2;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   &__logo {
+    display: inline-flex;
+    min-height: $space-6;
+    padding: $space-1;
     border-radius: $radius-sm;
+    align-items: center;
     font-family: $font-family-brand;
-    font-size: $font-size-brand-desktop;
+    font-size: $font-size-brand-mobile;
     font-weight: $font-weight-brand;
     line-height: 1;
     letter-spacing: $letter-spacing-default;
     color: $color-brand;
     text-decoration: none;
+    flex: 0 0 auto;
+  }
 
-    &:focus-visible {
-      outline: 0;
-      box-shadow: $focus-ring;
+  &__nav {
+    display: flex;
+    width: auto;
+    gap: $space-2;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    a {
+      display: inline-flex;
+      min-height: $header-control-height-mobile;
+      padding: $space-1 $space-2;
+      gap: $space-1;
+      border-radius: $radius-pill;
+      align-items: center;
+      justify-content: center;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      line-height: $line-height-control;
+      color: $color-text;
+      text-align: center;
+      text-decoration-thickness: 2px;
+      text-underline-offset: $space-1;
+      transition: background-color $transition-fast, color $transition-fast;
+
+      &:hover {
+        background: rgb(30 30 30 / 8%);
+      }
+    }
+  }
+
+  &__nav &__account {
+    min-width: $header-control-height-mobile;
+  }
+
+  &__icon {
+    width: $space-5;
+    height: $space-5;
+    flex: 0 0 auto;
+  }
+
+  &__desktop-label {
+    display: none;
+  }
+
+  &__mobile-label {
+    display: inline;
+  }
+
+  &__nav &__cta {
+    color: $color-surface;
+    background: $color-primary;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-surface;
+      background: #a91c52;
     }
   }
 }
 
-@media (max-width: $breakpoint-desktop) {
+@media (min-width: $breakpoint-sm) {
   .site-header {
-    min-height: $header-height-tablet;
-    flex: 0 0 $header-height-tablet;
-
-    &__logo {
-      font-size: $font-size-xl;
+    &__inner {
+      min-height: $header-height-desktop;
+      padding-block: $space-2;
+      padding-inline: $content-padding-desktop;
+      gap: $space-4;
     }
-  }
-}
-
-@media (max-width: $breakpoint-tablet) {
-  .site-header {
-    min-height: $header-height-mobile;
-    flex: 0 0 $header-height-mobile;
 
     &__logo {
-      font-size: $font-size-lg;
+      font-size: $font-size-brand-desktop;
     }
-  }
-}
 
-@media (max-height: 50rem) and (min-width: 64.0625rem) {
-  .site-header {
-    min-height: 5rem;
-    flex-basis: 5rem;
+    &__nav {
+      gap: $space-3;
 
-    &__logo {
-      font-size: $font-size-3xl;
+      a {
+        min-height: $header-control-height;
+        padding-inline: $space-3;
+        font-size: $font-size-sm;
+      }
+    }
+
+    &__nav &__account {
+      min-width: auto;
+    }
+
+    &__icon,
+    &__mobile-label {
+      display: none;
+    }
+
+    &__desktop-label {
+      display: inline;
     }
   }
 }

@@ -1,7 +1,9 @@
 // Color palette
 $color-cream: #f2f0d5;
+$color-cream-dark: #c9c185;
 $color-charcoal: #1e1e1e;
 $color-orange: #ff5f00;
+$color-orange-dark: #ad3f00;
 $color-raspberry: #c82363;
 $color-slate: #64748b;
 $color-white: #ffffff;
@@ -11,10 +13,10 @@ $color-background: $color-orange;
 $color-surface: $color-cream;
 $color-text: $color-charcoal;
 $color-text-inverse: $color-cream;
-$color-brand: $color-orange;
+$color-brand: $color-orange-dark;
 $color-primary: $color-raspberry;
 $color-border: $color-slate;
-$color-focus: $color-raspberry;
+$color-focus: $color-charcoal;
 
 // Font families
 $font-family-body: 'Lexend Deca', sans-serif;
@@ -30,6 +32,7 @@ $font-weight-extrabold: 800;
 // Type scale
 $font-size-2xs: 0.625rem; // 10px
 $font-size-xs: 0.75rem; // 12px
+$font-size-caption: 0.8125rem; // 13px
 $font-size-sm: 0.875rem; // 14px
 $font-size-base: 1rem; // 16px
 $font-size-md: 1.125rem; // 18px
@@ -38,18 +41,19 @@ $font-size-xl: 1.5rem; // 24px
 $font-size-2xl: 2rem; // 32px
 $font-size-3xl: 2.5rem; // 40px
 $font-size-4xl: 3rem; // 48px
-$font-size-5xl: 4.5rem; // 72px
+$font-size-5xl: 3.5rem; // 56px
 
 // Component typography
-$font-size-brand-desktop: $font-size-4xl;
+$font-size-brand-desktop: 1.75rem; // 28px
 $font-size-brand-mobile: $font-size-xl;
 $font-size-hero-desktop: $font-size-5xl;
-$font-size-hero-mobile: $font-size-3xl;
-$font-size-link-desktop: $font-size-lg;
-$font-size-link-mobile: $font-size-xs;
-$font-size-field-desktop: $font-size-md;
-$font-size-field-mobile: $font-size-xs;
-$font-size-button: $font-size-lg;
+$font-size-hero-tablet: $font-size-3xl;
+$font-size-hero-mobile: $font-size-2xl;
+$font-size-link-desktop: $font-size-base;
+$font-size-link-mobile: $font-size-sm;
+$font-size-field-desktop: $font-size-caption;
+$font-size-field-mobile: $font-size-caption;
+$font-size-button: $font-size-base;
 
 $font-weight-brand: $font-weight-bold;
 $font-weight-hero: $font-weight-bold;
@@ -59,23 +63,23 @@ $font-weight-button: $font-weight-bold;
 
 // Line heights
 $line-height-tight: 1.15;
-$line-height-heading: 1.4;
+$line-height-heading: 1.2;
 $line-height-body: 1.5;
 $line-height-control: 1.25;
-$line-height-hero-desktop: 1.4;
-$line-height-hero-mobile: 1.25;
+$line-height-hero-desktop: 1;
+$line-height-hero-mobile: 1.1;
 $letter-spacing-default: 0;
 
-// Spacing scale
-$space-1: 0.25rem; // 4px
-$space-2: 0.5rem; // 8px
-$space-3: 0.75rem; // 12px
-$space-4: 1rem; // 16px
-$space-5: 1.5rem; // 24px
-$space-6: 2rem; // 32px
-$space-7: 3rem; // 48px
-$space-8: 4rem; // 64px
-$space-9: 5rem; // 80px
+// Spacing scale inspired by BlaBlaCar Kirk
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 24px;
+$space-6: 32px;
+$space-7: 40px;
+$space-8: 48px;
+$space-9: $space-8; // Temporary legacy alias for pages not redesigned yet.
 
 // Borders and radii
 $border-width-thin: 1px;
@@ -84,33 +88,44 @@ $border-style: solid;
 $border-default: $border-width-thin $border-style $color-border;
 $border-accent: $border-width-medium $border-style $color-primary;
 
-$radius-sm: 0.25rem; // 4px
-$radius-md: 0.5rem; // 8px
-$radius-image: 2rem; // 32px
-$radius-search: 3.5rem; // 56px
-$radius-pill: 999px;
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-moderate: 12px;
+$radius-image: 24px;
+$radius-search: 24px;
+$radius-pill: 9999px;
 
 // Layout
-$container-max-width: 81.5rem; // 1304px
-$content-padding-desktop: 4.25rem; // 68px
-$content-padding-mobile: 1.75rem; // 28px
-$header-height-desktop: 6.25rem; // 100px
-$header-height-tablet: 3.25rem; // 52px
-$header-height-mobile: 2.75rem; // 44px
-$footer-height: 1.25rem; // 20px
-$search-control-min-height: 5.5rem; // 88px
+$container-max-width: 1200px;
+$content-padding-desktop: $space-5;
+$content-padding-mobile: $space-5;
+$header-height-desktop: 64px;
+$header-height-tablet: 64px;
+$header-height-mobile: 64px;
+$footer-height: 48px;
+$header-control-height: 40px;
+$header-control-height-mobile: 44px;
+$control-height-button: 48px;
+$control-height-input: 56px;
+$search-control-min-height: $control-height-input;
 
-// Breakpoints
-$breakpoint-mobile: 30rem; // 480px
-$breakpoint-tablet: 48rem; // 768px
-$breakpoint-desktop: 64rem; // 1024px
-$breakpoint-wide: 90rem; // 1440px
+// Responsive scale inspired by BlaBlaCar Kirk
+$breakpoint-sm: 40rem; // 640px
+$breakpoint-md: 50rem; // 800px
+$breakpoint-lg: 60rem; // 960px
+$breakpoint-xl: 79.5rem; // 1272px
+
+// Compatibility aliases while the existing pages are migrated to the new scale.
+$breakpoint-mobile: $breakpoint-sm;
+$breakpoint-tablet: $breakpoint-md;
+$breakpoint-desktop: $breakpoint-lg;
+$breakpoint-wide: $breakpoint-xl;
 
 // Motion and elevation
 $transition-fast: 150ms ease-in-out;
 $transition-default: 250ms ease-in-out;
-$shadow-control: 0 0.25rem 0.75rem rgb(30 30 30 / 12%);
-$focus-ring: 0 0 0 0.1875rem rgb(200 35 99 / 35%);
+$shadow-control: 0 4px 12px rgb(30 30 30 / 12%);
+$focus-ring: 0 0 0 3px $color-focus;
 
 // Public asset paths
 $path-images: '/assets/img';
